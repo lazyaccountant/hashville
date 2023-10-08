@@ -60,5 +60,3 @@ def save_trans():
         clear()
 
 save_button = st.button("Save", type="secondary", on_click=save_trans)
-
-# host on streamlit
