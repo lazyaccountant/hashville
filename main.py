@@ -1,8 +1,8 @@
 import streamlit as st
-from datetime import date
+from datetime import date, datetime
+from sheets import ws, calc_bal
 
 today = date.today()
-
 
 def clear():
     st.session_state.date = today
@@ -14,6 +14,7 @@ def clear():
 st.title("Hashville🏠")
 
 trans_date = st.date_input("Date", max_value=today, format="MM/DD/YYYY",key="date")
+trans_date_str = datetime.strftime(trans_date, "%A, %B %d, %Y")
 
 desc = st.text_input(label="Description", key="desc")
 
@@ -49,14 +50,15 @@ def save_trans():
     elif cat == "Select Category":
         st.warning('Please enter category', icon="⚠️")
     else:
+        if cat != "Inflow from Client":
+            data = [trans_date_str, desc, amt, "", calc_bal(ws), cat, notes, "HASHVILLE"]
+        else:
+            data = [trans_date_str, desc, "", amt, calc_bal(ws), cat, notes, "HASHVILLE"]
+
+        ws.append_row(data, value_input_option='USER_ENTERED')
         st.success('Transaction Saved!', icon="✅")
-        data = [trans_date, desc, amt, cat, notes]
-        print(data)
         clear()
 
 save_button = st.button("Save", type="secondary", on_click=save_trans)
 
-# create private git repo
-# input google sheet credentials in secrets.toml
-# add append function
 # host on streamlit
